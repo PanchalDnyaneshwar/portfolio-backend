@@ -6,7 +6,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: [process.env.VITE_FRONTEND_URL , "https://dnyaneshwarpanchal-portfolio.netlify.app"],
+  origin: [process.env.VITE_FRONTEND_URL , "https://dnyaneshwarpanchal.netlify.app"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: false
 }));
