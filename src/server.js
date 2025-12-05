@@ -5,11 +5,18 @@ const { registerAdminOnce } = require("./controllers/adminAuthController");
 dotenv.config();
 
 const app = express();
-app.use(cors({
-  origin: [process.env.VITE_FRONTEND_URL , "https://dnyaneshwarpanchal.netlify.app"],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: false
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://dnyaneshwarpanchal.netlify.app",
+      "https://dnyaneshwarpanchal.netlify.com",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 
 app.use(express.json());
 
