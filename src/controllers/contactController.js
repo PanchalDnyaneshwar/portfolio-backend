@@ -3,13 +3,10 @@ const { createContact } = require("../models/contactModel");
 const transporter = require("../config/email");
 
 exports.contactValidators = [
-  body("name").trim().notEmpty().withMessage("Name is required"),
-  body("email").trim().isEmail().withMessage("Valid email required"),
-  body("subject").trim().notEmpty().withMessage("Subject required"),
-  body("message")
-    .trim()
-    .isLength({ min: 10 })
-    .withMessage("Message must be at least 10 chars")
+  body("name").trim().notEmpty(),
+  body("email").trim().isEmail(),
+  body("subject").trim().notEmpty(),
+  body("message").trim().isLength({ min: 10 })
 ];
 
 exports.handlePublicContact = async (req, res) => {
@@ -20,28 +17,47 @@ exports.handlePublicContact = async (req, res) => {
   const { name, email, subject, message } = req.body;
 
   try {
+    // Store in DB
     const id = await createContact({ name, email, subject, message });
 
-    // send email
+    // -------- Send Email to Admin ----------
     await transporter.sendMail({
       from: `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
       to: process.env.ADMIN_EMAIL,
-      subject: `New message from portfolio: ${subject}`,
+      subject: `New message from ${name}`,
       html: `
-        <h3>New message from ${name}</h3>
+        <h3>New message from portfolio</h3>
+        <p><strong>Name:</strong> ${name}</p>
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Subject:</strong> ${subject}</p>
-        <p><strong>Message:</strong></p>
-        <p>${message.replace(/\n/g, "<br/>")}</p>
+        <p>${message.replace(/\n/g, "<br>")}</p>
       `
     });
 
-    res.status(201).json({
+    // -------- Auto-Reply to User ----------
+    await transporter.sendMail({
+      from: `"Dnyaneshwar Portfolio" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Thanks for contacting me!",
+      html: `
+        <h2>Thank you, ${name}!</h2>
+        <p>I received your message and I will reply soon.</p>
+        <p><strong>Your message:</strong></p>
+        <p>${message.replace(/\n/g, "<br>")}</p>
+      `
+    });
+
+    return res.json({
       success: true,
       message: "Message sent successfully",
       data: { id }
     });
+
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    console.error("Email Error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Email sending failed"
+    });
   }
 };

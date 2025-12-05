@@ -1,8 +1,5 @@
 const router = require("express").Router();
-const {
-  contactValidators,
-  handlePublicContact
-} = require("../controllers/contactController");
+const { contactValidators, handlePublicContact } = require("../controllers/contactController");
 
 router.post("/", contactValidators, handlePublicContact);
 
