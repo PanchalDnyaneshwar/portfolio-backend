@@ -5,6 +5,16 @@ const { registerAdminOnce } = require("./controllers/adminAuthController");
 
 dotenv.config();
 
+// Validate critical environment variables on startup
+const requiredEnvVars = ["JWT_SECRET", "DB_HOST", "DB_USER", "DB_PASSWORD", "DB_NAME"];
+const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
+
+if (missingVars.length > 0) {
+  console.warn(
+    `⚠️  Missing environment variables: ${missingVars.join(", ")}. Some features may not work properly.`
+  );
+}
+
 const app = express();
 
 // ---------------- CORS CONFIG ----------------
@@ -39,8 +49,8 @@ app.use("/api/skills", require("./routes/publicSkillRoutes"));
 app.use("/api/about", require("./routes/publicAboutRoutes"));
 app.use("/api/work", require("./routes/publicWorkRoutes"));
 
-// ⭐ FIXED CONTACT ROUTE — removed .js extension
-app.use("/api/contact", require("./routes/contactRoutes.js"));
+// Contact route
+app.use("/api/contact", require("./routes/contactRoutes"));
 // ------------------------------------------------
 
 // ---------------- ADMIN ROUTES ------------------
@@ -51,6 +61,17 @@ app.use("/api/admin/about", require("./routes/adminAboutRoutes"));
 app.use("/api/admin/work", require("./routes/adminWorkRoutes"));
 app.use("/api/admin/contacts", require("./routes/adminContactRoutes"));
 // ------------------------------------------------
+
+// Global error handler for unhandled promise rejections
+process.on("unhandledRejection", (err) => {
+  console.error("Unhandled Promise Rejection:", err);
+});
+
+// Global error handler for uncaught exceptions
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
+  process.exit(1);
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>

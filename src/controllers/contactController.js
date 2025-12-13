@@ -54,10 +54,19 @@ exports.handlePublicContact = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Email Error:", err);
+    console.error("Contact Error:", err);
+    
+    // Check if it's a database error or email error
+    if (err.message && err.message.includes("email")) {
+      return res.status(500).json({
+        success: false,
+        message: "Email sending failed. Please try again later."
+      });
+    }
+    
     return res.status(500).json({
       success: false,
-      message: "Email sending failed"
+      message: "Failed to process your message. Please try again later."
     });
   }
 };

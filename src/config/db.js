@@ -2,6 +2,16 @@ const mysql = require("mysql2/promise");
 const dotenv = require("dotenv");
 dotenv.config();
 
+// Validate required environment variables
+const requiredEnvVars = ["DB_HOST", "DB_USER", "DB_PASSWORD", "DB_NAME"];
+const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
+
+if (missingVars.length > 0) {
+  console.error(
+    `⚠️  Missing required database environment variables: ${missingVars.join(", ")}`
+  );
+}
+
 const isAiven = process.env.DB_SSL === "true";
 
 const pool = mysql.createPool({
@@ -19,5 +29,15 @@ const pool = mysql.createPool({
     ? { rejectUnauthorized: false } 
     : undefined
 });
+
+// Test connection on startup
+pool.getConnection()
+  .then((connection) => {
+    console.log("✅ Database connection established");
+    connection.release();
+  })
+  .catch((err) => {
+    console.error("❌ Database connection failed:", err.message);
+  });
 
 module.exports = pool;

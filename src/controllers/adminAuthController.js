@@ -48,6 +48,13 @@ exports.loginAdmin = async (req, res) => {
       .json({ success: false, message: "Wrong password 😾" });
   }
 
+  if (!process.env.JWT_SECRET) {
+    return res.status(500).json({ 
+      success: false, 
+      message: "Server configuration error" 
+    });
+  }
+
   const token = jwt.sign(
     { id: admin.id, email: admin.email },
     process.env.JWT_SECRET,
