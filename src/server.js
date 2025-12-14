@@ -48,6 +48,8 @@ app.use("/api/projects", require("./routes/publicProjectRoutes"));
 app.use("/api/skills", require("./routes/publicSkillRoutes"));
 app.use("/api/about", require("./routes/publicAboutRoutes"));
 app.use("/api/work", require("./routes/publicWorkRoutes"));
+app.use("/api/blogs", require("./routes/publicBlogRoutes"));
+app.use("/api/auth", require("./routes/userAuthRoutes"));
 
 // Contact route
 app.use("/api/contact", require("./routes/contactRoutes"));
@@ -59,6 +61,7 @@ app.use("/api/admin/projects", require("./routes/adminProjectRoutes"));
 app.use("/api/admin/skills", require("./routes/adminSkillRoutes"));
 app.use("/api/admin/about", require("./routes/adminAboutRoutes"));
 app.use("/api/admin/work", require("./routes/adminWorkRoutes"));
+app.use("/api/admin/blogs", require("./routes/adminBlogRoutes"));
 app.use("/api/admin/contacts", require("./routes/adminContactRoutes"));
 // ------------------------------------------------
 

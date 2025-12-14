@@ -12,7 +12,8 @@ if (missingVars.length > 0) {
   );
 }
 
-const isAiven = process.env.DB_SSL === "true";
+// Enable SSL for remote databases (Aiven, Railway, etc.)
+const useSSL = process.env.DB_SSL === "true" || process.env.DB_SSL === "1";
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -25,7 +26,7 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   queueLimit: 0,
 
-  ssl: isAiven
+  ssl: useSSL
     ? { rejectUnauthorized: false } 
     : undefined
 });
